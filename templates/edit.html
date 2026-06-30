@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Edit Task</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <main class="app-container">
+
+        <section class="task-card">
+
+            <h1>Edit Task</h1>
+
+            <form method="POST" class="task-form">
+
+                <input type="text" name="title" value="{{ task.text }}" autocomplete="off">
+
+                <select name="priority">
+
+                    <option value="low" {% if task.priority=="low" %}selected{% endif %}>
+                        Low Priority
+                    </option>
+
+                    <option value="medium" {% if task.priority=="medium" %}selected{% endif %}>
+                        Medium Priority
+                    </option>
+
+                    <option value="high" {% if task.priority=="high" %}selected{% endif %}>
+                        High Priority
+                    </option>
+
+                </select>
+
+                <select name="category">
+
+                    <option value="general" {% if task.category=="general" %}selected{% endif %}>
+                        General
+                    </option>
+
+                    <option value="school" {% if task.category=="school" %}selected{% endif %}>
+                        School
+                    </option>
+
+                    <option value="work" {% if task.category=="work" %}selected{% endif %}>
+                        Work
+                    </option>
+
+                    <option value="personal" {% if task.category=="personal" %}selected{% endif %}>
+                        Personal
+                    </option>
+
+                    <option value="errands" {% if task.category=="errands" %}selected{% endif %}>
+                        Errands
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    Save Changes
+                </button>
+
+            </form>
+
+            <a href="/">
+                ← Back to Tasks
+            </a>
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

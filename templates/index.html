@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Task Manager</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <main class="app-container">
+
+        <section class="task-card">
+
+            <div class="user-bar">
+
+                <p>
+
+                    Logged in as:
+
+                    <strong>
+                        {{ session["username"] }}
+                    </strong>
+
+                </p>
+
+                <div class="user-actions">
+
+                    <button id="theme-toggle-btn" type="button">
+                        Dark Mode
+                    </button>
+
+                    <a href="/logout">
+
+                        Logout
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <h1>Task Manager</h1>
+
+            <p class="subtitle">
+                Keep track of what needs to get done.
+            </p>
+
+            <form method="POST" class="task-form">
+
+                <input
+                    type="text"
+                    name="task"
+                    placeholder="Enter a new task..."
+                    autocomplete="off"
+                >
+
+                <p id="character-count">
+                    0 characters
+                </p>
+
+                <select name="priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+
+                <select name="category">
+                    <option value="general" selected>General</option>
+                    <option value="school">School</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="errands">Errands</option>
+                </select>
+
+                <button type="submit">
+                    Add
+                </button>
+
+            </form>
+
+            <button id="toggle-completed-btn">
+                Hide Completed Tasks
+            </button>
+
+            <form method="GET" class="search-form">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search tasks..."
+                    value="{{ search_term }}"
+                    autocomplete="off"
+                >
+
+                <input
+                    type="hidden"
+                    name="filter"
+                    value="{{ current_filter }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="sort"
+                    value="{{ current_sort }}"
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </form>
+
+            <div class="controls">
+
+                <div class="filter-controls">
+
+                    <a href="/?filter=all&sort={{ current_sort }}&search={{ search_term }}"
+                        class="{% if current_filter == 'all' %}active-control{% endif %}">
+                        All
+                    </a>
+
+                    <a href="/?filter=active&sort={{ current_sort }}&search={{ search_term }}"
+                        class="{% if current_filter == 'active' %}active-control{% endif %}">
+                        Active
+                    </a>
+
+                    <a href="/?filter=completed&sort={{ current_sort }}&search={{ search_term }}"
+                        class="{% if current_filter == 'completed' %}active-control{% endif %}">
+                        Completed
+                    </a>
+
+                </div>
+
+                <div class="sort-controls">
+
+                    <a href="/?filter={{ current_filter }}&sort=date&search={{ search_term }}"
+                        class="{% if current_sort == 'date' %}active-control{% endif %}">
+                        Newest
+                    </a>
+
+                    <a href="/?filter={{ current_filter }}&sort=priority&search={{ search_term }}"
+                        class="{% if current_sort == 'priority' %}active-control{% endif %}">
+                        Priority
+                    </a>
+
+                </div>
+
+            </div>
+
+            <ul class="task-list">
+
+                {% for task in tasks %}
+
+                <li class="task-item {% if task.completed %}completed{% endif %}">
+
+                    <div class="task-content">
+
+                        <span class="task-text">
+                            {{ task.text }}
+                        </span>
+
+                        <div class="task-meta">
+
+                            <span class="priority-label priority-{{ task.priority }}">
+                                {{ task.priority }}
+                            </span>
+
+                            <span class="category-label">
+                                {{ task.category }}
+                            </span>
+
+                        </div>
+
+                        <div class="task-meta">
+
+                            <small>
+                                Created:
+                                {{ format_datetime(task.get("created_at")) }}
+                            </small>
+
+                            {% if task.get("completed_at") %}
+
+                            <small>
+                                Completed:
+                                {{ format_datetime(task.get("completed_at")) }}
+                            </small>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="task-actions">
+
+                        <a class="complete-link" href="/complete/{{ task.id }}">
+                            {% if task.completed %}
+                            Undo
+                            {% else %}
+                            Complete
+                            {% endif %}
+                        </a>
+
+                        <a class="edit-link" href="/edit/{{ task.id }}">
+                            Edit
+                        </a>
+
+                        <a class="delete-link" href="/delete/{{ task.id }}">
+                            Delete
+                        </a>
+
+                    </div>
+
+                </li>
+
+                {% else %}
+
+                <li class="empty-state">
+
+                    {% if search_term %}
+
+                    No matching tasks found.
+
+                    {% elif current_filter == "completed" %}
+
+                    No completed tasks yet.
+
+                    {% elif current_filter == "active" %}
+
+                    No active tasks remaining.
+
+                    {% else %}
+
+                    No tasks yet. Add one above.
+
+                    {% endif %}
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
