@@ -27,6 +27,34 @@ body {
   color: #52525b;
 }
 
+.task-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.task-form input,
+.task-form select,
+.task-form button {
+  width: 100%;
+  padding: 0.75rem;
+  font: inherit;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+}
+
+.task-form button {
+  cursor: pointer;
+  border: none;
+  background: #18181b;
+  color: white;
+}
+
 .task-list {
   display: grid;
   gap: 1rem;
@@ -40,8 +68,25 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+.task-card.completed {
+  opacity: 0.72;
+}
+
+.task-card.completed h2 {
+  text-decoration: line-through;
+}
+
+.task-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
 .task-card h2 {
   margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .task-meta {
@@ -51,6 +96,55 @@ body {
   margin-top: 1rem;
   font-size: 0.9rem;
   color: #52525b;
+}
+
+.due-date-badge {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.no-due-date {
+  background: #e4e4e7;
+  color: #3f3f46;
+}
+
+.upcoming {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.overdue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.completed-with-due-date {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.task-actions button {
+  cursor: pointer;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: #18181b;
+  color: white;
+  font: inherit;
+}
+
+.task-actions .danger-button {
+  background: #991b1b;
 }
 
 .status-message {
@@ -64,4 +158,11 @@ body {
   background: #fee2e2;
   color: #991b1b;
   border-radius: 8px;
+}
+
+@media (min-width: 760px) {
+  .task-form {
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    align-items: center;
+  }
 }

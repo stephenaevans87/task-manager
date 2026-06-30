@@ -67,6 +67,11 @@ class Task(db.Model):
         nullable=True
     )
 
+    due_date = db.Column(
+        db.Date,
+        nullable=True
+    )
+
     priority = db.Column(
         db.String(50),
         nullable=False,
@@ -93,6 +98,7 @@ class Task(db.Model):
             "completed": self.completed,
             "created_at": self.created_at,
             "completed_at": self.completed_at,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
             "priority": self.priority,
             "category": self.category,
             "user_id": self.user_id

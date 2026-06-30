@@ -19,7 +19,12 @@
 
             <form method="POST" class="task-form">
 
-                <input type="text" name="title" value="{{ task.text }}" autocomplete="off">
+                <input
+                    type="text"
+                    name="title"
+                    value="{{ task.text }}"
+                    autocomplete="off"
+                >
 
                 <select name="priority">
 
@@ -61,6 +66,12 @@
 
                 </select>
 
+                <input
+                    type="date"
+                    name="due_date"
+                    value="{{ task.due_date if task.due_date else '' }}"
+                >
+
                 <button type="submit">
                     Save Changes
                 </button>
@@ -76,6 +87,7 @@
     </main>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 
 </html>

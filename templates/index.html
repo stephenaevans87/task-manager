@@ -76,6 +76,11 @@
                     <option value="errands">Errands</option>
                 </select>
 
+                <input
+                    type="date"
+                    name="due_date"
+                >
+
                 <button type="submit">
                     Add
                 </button>
@@ -147,6 +152,11 @@
                         Priority
                     </a>
 
+                    <a href="/?filter={{ current_filter }}&sort=due&search={{ search_term }}"
+                        class="{% if current_sort == 'due' %}active-control{% endif %}">
+                        Due Date
+                    </a>
+
                 </div>
 
             </div>
@@ -172,6 +182,32 @@
                             <span class="category-label">
                                 {{ task.category }}
                             </span>
+
+                            {% if task.due_status == "overdue" %}
+
+                            <span class="due-date-label due-date-overdue">
+                                Overdue: {{ task.due_date }}
+                            </span>
+
+                            {% elif task.due_status == "completed" %}
+
+                            <span class="due-date-label due-date-completed">
+                                Completed — due {{ task.due_date }}
+                            </span>
+
+                            {% elif task.due_status == "upcoming" %}
+
+                            <span class="due-date-label due-date-upcoming">
+                                Due {{ task.due_date }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="due-date-label due-date-none">
+                                No due date
+                            </span>
+
+                            {% endif %}
 
                         </div>
 

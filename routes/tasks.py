@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, abort
 from flask import session
-from datetime import datetime
+from datetime import datetime, date
 
 from storage import (
     load_tasks,
@@ -14,6 +14,21 @@ from storage import (
 
 
 tasks_bp = Blueprint("tasks", __name__)
+
+
+def parse_due_date(value):
+
+    if value is None or value == "":
+        return None
+
+    try:
+        return datetime.strptime(
+            value,
+            "%Y-%m-%d"
+        ).date()
+
+    except ValueError:
+        return None
 
 
 # ===================================
@@ -41,6 +56,10 @@ def home():
         category = request.form.get(
             "category",
             "general"
+        )
+
+        due_date = parse_due_date(
+            request.form.get("due_date")
         )
 
         if task_text == "":
@@ -73,7 +92,8 @@ def home():
             ),
             priority=priority,
             category=category,
-            user_id=session["user_id"]
+            user_id=session["user_id"],
+            due_date=due_date
         )
 
         return redirect("/")
@@ -115,6 +135,28 @@ def home():
             if task["completed"]
         ]
 
+    today = date.today()
+
+    for task in tasks:
+
+        task["due_status"] = "none"
+
+        if task.get("due_date"):
+
+            due = datetime.strptime(
+                task["due_date"],
+                "%Y-%m-%d"
+            ).date()
+
+            if task["completed"]:
+                task["due_status"] = "completed"
+
+            elif due < today:
+                task["due_status"] = "overdue"
+
+            else:
+                task["due_status"] = "upcoming"
+
     current_sort = request.args.get(
         "sort",
         "date"
@@ -136,6 +178,15 @@ def home():
                     1
                 ),
                 task["created_at"]
+            )
+        )
+
+    elif current_sort == "due":
+
+        tasks.sort(
+            key=lambda task: (
+                task["due_date"] is None,
+                task["due_date"] or "9999-12-31"
             )
         )
 
@@ -250,6 +301,10 @@ def edit_task(task_id):
             "general"
         )
 
+        due_date = parse_due_date(
+            request.form.get("due_date")
+        )
+
         allowed_priorities = [
             "low",
             "medium",
@@ -274,7 +329,8 @@ def edit_task(task_id):
             task_id,
             title,
             priority,
-            category
+            category,
+            due_date
         )
 
         return redirect("/")

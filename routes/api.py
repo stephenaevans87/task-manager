@@ -47,6 +47,21 @@ def require_login():
     return True
 
 
+def parse_due_date(value):
+
+    if value is None or value == "":
+        return None
+
+    try:
+        return datetime.strptime(
+            value,
+            "%Y-%m-%d"
+        ).date()
+
+    except ValueError:
+        return "invalid"
+
+
 def get_user_task(task_id):
 
     task = get_task(task_id)
@@ -89,9 +104,15 @@ def create_task():
     task_text = data.get("task", "").strip()
     priority = data.get("priority", "medium")
     category = data.get("category", "general")
+    due_date = parse_due_date(
+        data.get("due_date")
+    )
 
     if task_text == "":
         return api_error("Task text is required", 400)
+
+    if due_date == "invalid":
+        return api_error("Due date must use YYYY-MM-DD format", 400)
 
     if priority not in ["low", "medium", "high"]:
         priority = "medium"
@@ -104,7 +125,8 @@ def create_task():
         created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         priority=priority,
         category=category,
-        user_id=session["user_id"]
+        user_id=session["user_id"],
+        due_date=due_date
     )
 
     return api_success(
@@ -153,8 +175,20 @@ def patch_task(task_id):
     category = data.get("category", task["category"])
     completed = data.get("completed", task["completed"])
 
+    if "due_date" in data:
+        due_date = parse_due_date(
+            data.get("due_date")
+        )
+    else:
+        due_date = parse_due_date(
+            task["due_date"]
+        )
+
     if text == "":
         return api_error("Task text is required", 400)
+
+    if due_date == "invalid":
+        return api_error("Due date must use YYYY-MM-DD format", 400)
 
     if priority not in ["low", "medium", "high"]:
         priority = task["priority"]
@@ -166,7 +200,8 @@ def patch_task(task_id):
         task_id,
         text,
         priority,
-        category
+        category,
+        due_date
     )
 
     completed_at = task["completed_at"]

@@ -9,6 +9,7 @@ def task_to_dict(task):
         "completed": task.completed,
         "created_at": task.created_at,
         "completed_at": task.completed_at,
+        "due_date": task.due_date.isoformat() if task.due_date else None,
         "priority": task.priority,
         "category": task.category,
         "user_id": task.user_id
@@ -52,13 +53,14 @@ def get_task(task_id):
     return task_to_dict(task)
 
 
-def add_task(text, created_at, priority, category, user_id):
+def add_task(text, created_at, priority, category, user_id, due_date=None):
 
     task = Task(
         text=text,
         completed=False,
         created_at=created_at,
         completed_at=None,
+        due_date=due_date,
         priority=priority,
         category=category,
         user_id=user_id
@@ -81,7 +83,7 @@ def delete_task(task_id):
     db.session.commit()
 
 
-def update_task(task_id, text, priority, category):
+def update_task(task_id, text, priority, category, due_date=None):
 
     task = Task.query.get(task_id)
 
@@ -91,6 +93,7 @@ def update_task(task_id, text, priority, category):
     task.text = text
     task.priority = priority
     task.category = category
+    task.due_date = due_date
 
     db.session.commit()
 
