@@ -8,6 +8,7 @@ from werkzeug.security import (
     generate_password_hash
 )
 
+from extensions import limiter
 from models import db
 from models import User
 
@@ -22,6 +23,7 @@ users_bp = Blueprint(
     "/register",
     methods=["GET", "POST"]
 )
+@limiter.limit("5 per hour")
 def register():
 
     error = None

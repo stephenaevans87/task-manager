@@ -4,6 +4,8 @@ from flask import session
 from flask import jsonify
 from datetime import datetime
 
+from extensions import limiter
+
 from storage import (
     load_tasks,
     get_task,
@@ -76,6 +78,7 @@ def get_user_task(task_id):
 
 
 @api_bp.route("/tasks", methods=["GET"])
+@limiter.limit("100 per minute")
 def get_tasks():
 
     if not require_login():
@@ -91,6 +94,7 @@ def get_tasks():
 
 
 @api_bp.route("/tasks", methods=["POST"])
+@limiter.limit("30 per minute")
 def create_task():
 
     if not require_login():
@@ -107,6 +111,9 @@ def create_task():
     due_date = parse_due_date(
         data.get("due_date")
     )
+
+    print("RAW API DUE DATE:", data.get("due_date"))
+    print("PARSED API DUE DATE:", due_date)
 
     if task_text == "":
         return api_error("Task text is required", 400)
@@ -137,6 +144,7 @@ def create_task():
 
 
 @api_bp.route("/tasks/<int:task_id>", methods=["GET"])
+@limiter.limit("100 per minute")
 def get_single_task(task_id):
 
     if not require_login():
@@ -155,6 +163,7 @@ def get_single_task(task_id):
 
 
 @api_bp.route("/tasks/<int:task_id>", methods=["PATCH"])
+@limiter.limit("60 per minute")
 def patch_task(task_id):
 
     if not require_login():
@@ -229,6 +238,7 @@ def patch_task(task_id):
 
 
 @api_bp.route("/tasks/<int:task_id>", methods=["DELETE"])
+@limiter.limit("30 per minute")
 def delete_single_task(task_id):
 
     if not require_login():

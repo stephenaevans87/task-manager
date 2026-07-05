@@ -10,6 +10,7 @@ from werkzeug.security import (
 )
 
 from models import User
+from extensions import limiter
 
 
 auth_bp = Blueprint(
@@ -22,6 +23,7 @@ auth_bp = Blueprint(
     "/login",
     methods=["GET", "POST"]
 )
+@limiter.limit("5 per minute")
 def login():
 
     error = None
