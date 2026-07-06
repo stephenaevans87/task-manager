@@ -1,3 +1,6 @@
+
+import re
+
 from flask import Blueprint
 from flask import render_template
 from flask import request
@@ -24,6 +27,26 @@ users_bp = Blueprint(
 )
 
 
+def is_valid_email(email):
+
+    pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+    return re.match(
+        pattern,
+        email
+    ) is not None
+
+
+def is_valid_username(username):
+
+    pattern = r"^[A-Za-z0-9_-]+$"
+
+    return re.match(
+        pattern,
+        username
+    ) is not None
+
+
 @users_bp.route(
     "/register",
     methods=["GET", "POST"]
@@ -35,26 +58,44 @@ def register():
 
     if request.method == "POST":
 
-        username = request.form[
-            "username"
-        ].strip()
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
-        email = request.form[
-            "email"
-        ].strip()
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
 
-        password = request.form[
-            "password"
-        ]
+        password = request.form.get(
+            "password",
+            ""
+        )
 
         if username == "":
             error = "Username is required."
 
+        elif len(username) < 3 or len(username) > 50:
+            error = "Username must be between 3 and 50 characters."
+
+        elif not is_valid_username(username):
+            error = "Username may only contain letters, numbers, hyphens, and underscores."
+
         elif email == "":
             error = "Email is required."
 
+        elif len(email) > 255:
+            error = "Email is too long."
+
+        elif not is_valid_email(email):
+            error = "Please enter a valid email address."
+
         elif password == "":
             error = "Password is required."
+
+        elif len(password) < 8:
+            error = "Password must be at least 8 characters."
 
         elif User.query.filter_by(
             username=username

@@ -1,3 +1,4 @@
+
 from flask import Blueprint
 from flask import request
 from flask import session
@@ -64,6 +65,17 @@ def parse_due_date(value):
         return "invalid"
 
 
+def clean_string(value, fallback=""):
+
+    if value is None:
+        return fallback
+
+    if not isinstance(value, str):
+        return fallback
+
+    return value.strip()
+
+
 def get_user_task(task_id):
 
     task = get_task(task_id)
@@ -100,20 +112,29 @@ def create_task():
     if not require_login():
         return api_error("Unauthorized", 401)
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     if data is None:
-        return api_error("Missing JSON data", 400)
+        return api_error("Missing or invalid JSON data", 400)
 
-    task_text = data.get("task", "").strip()
-    priority = data.get("priority", "medium")
-    category = data.get("category", "general")
+    task_text = clean_string(
+        data.get("task"),
+        ""
+    )
+
+    priority = clean_string(
+        data.get("priority"),
+        "medium"
+    )
+
+    category = clean_string(
+        data.get("category"),
+        "general"
+    )
+
     due_date = parse_due_date(
         data.get("due_date")
     )
-
-    print("RAW API DUE DATE:", data.get("due_date"))
-    print("PARSED API DUE DATE:", due_date)
 
     if task_text == "":
         return api_error("Task text is required", 400)
@@ -174,15 +195,33 @@ def patch_task(task_id):
     if task is None:
         return api_error("Task not found", 404)
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     if data is None:
-        return api_error("Missing JSON data", 400)
+        return api_error("Missing or invalid JSON data", 400)
 
-    text = data.get("text", task["text"]).strip()
-    priority = data.get("priority", task["priority"])
-    category = data.get("category", task["category"])
-    completed = data.get("completed", task["completed"])
+    text = clean_string(
+        data.get("text", task["text"]),
+        task["text"]
+    )
+
+    priority = clean_string(
+        data.get("priority", task["priority"]),
+        task["priority"]
+    )
+
+    category = clean_string(
+        data.get("category", task["category"]),
+        task["category"]
+    )
+
+    completed = data.get(
+        "completed",
+        task["completed"]
+    )
+
+    if not isinstance(completed, bool):
+        completed = task["completed"]
 
     if "due_date" in data:
         due_date = parse_due_date(
@@ -228,7 +267,7 @@ def patch_task(task_id):
             completed_at
         )
 
-    updated_task = get_task(task_id)
+    updated_task = get_user_task(task_id)
 
     return api_success(
         updated_task,
