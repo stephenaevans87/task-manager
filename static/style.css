@@ -922,3 +922,13 @@ select:focus {
 
     padding-right: 52px;
 }
+
+.success-message {
+
+    color: #198754;
+
+    font-weight: bold;
+
+    margin-bottom: 20px;
+
+}

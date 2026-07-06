@@ -30,6 +30,12 @@ class User(db.Model):
         nullable=False
     )
 
+    is_verified = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
+
     tasks = db.relationship(
         "Task",
         backref="user",

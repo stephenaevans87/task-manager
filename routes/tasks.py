@@ -305,6 +305,9 @@ def edit_task(task_id):
             request.form.get("due_date")
         )
 
+        print("RAW DUE DATE:", request.form.get("due_date"))
+        print("PARSED DUE DATE:", due_date)
+
         allowed_priorities = [
             "low",
             "medium",

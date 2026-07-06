@@ -57,6 +57,12 @@ def login():
                 "Invalid username or password."
             )
 
+        elif not user.is_verified:
+
+            error = (
+                "Please verify your email before logging in."
+            )
+
         else:
 
             session["user_id"] = (

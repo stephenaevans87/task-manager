@@ -23,7 +23,7 @@
 
             {% if error %}
 
-            <p class="error-message">
+            <p class="success-message {% if 'successfully' not in error %}error-message{% endif %}">
                 {{ error }}
             </p>
 

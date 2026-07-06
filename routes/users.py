@@ -12,6 +12,11 @@ from extensions import limiter
 from models import db
 from models import User
 
+from utils import (
+    generate_verification_token,
+    verify_verification_token
+)
+
 
 users_bp = Blueprint(
     "users",
@@ -74,12 +79,30 @@ def register():
             user = User(
                 username=username,
                 email=email,
-                password_hash=password_hash
+                password_hash=password_hash,
+                is_verified=False
             )
 
             db.session.add(user)
 
             db.session.commit()
+
+            token = generate_verification_token(
+                user.email
+            )
+
+            verification_link = (
+                request.host_url.rstrip("/")
+                + url_for(
+                    "users.verify_email",
+                    token=token
+                )
+            )
+
+            print("\n" + "=" * 60)
+            print("EMAIL VERIFICATION LINK")
+            print(verification_link)
+            print("=" * 60 + "\n")
 
             return redirect(
                 url_for(
@@ -90,4 +113,41 @@ def register():
     return render_template(
         "register.html",
         error=error
+    )
+
+
+@users_bp.route("/verify-email/<token>")
+def verify_email(token):
+
+    email = verify_verification_token(
+        token
+    )
+
+    if email is None:
+
+        return render_template(
+            "login.html",
+            error="Invalid or expired verification link."
+        )
+
+    user = User.query.filter_by(
+        email=email
+    ).first()
+
+    if user is None:
+
+        return render_template(
+            "login.html",
+            error="User not found."
+        )
+
+    if not user.is_verified:
+
+        user.is_verified = True
+
+        db.session.commit()
+
+    return render_template(
+        "login.html",
+        error="Email verified successfully! You may now log in."
     )
