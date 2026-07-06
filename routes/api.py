@@ -1,4 +1,3 @@
-
 from flask import Blueprint
 from flask import request
 from flask import session
@@ -114,6 +113,8 @@ def create_task():
 
     data = request.get_json(silent=True)
 
+    print("API RAW DATA:", data)
+
     if data is None:
         return api_error("Missing or invalid JSON data", 400)
 
@@ -136,6 +137,9 @@ def create_task():
         data.get("due_date")
     )
 
+    print("API RAW DUE DATE:", data.get("due_date"))
+    print("API PARSED DUE DATE:", due_date)
+
     if task_text == "":
         return api_error("Task text is required", 400)
 
@@ -156,6 +160,8 @@ def create_task():
         user_id=session["user_id"],
         due_date=due_date
     )
+
+    print("API SAVED TASK:", new_task)
 
     return api_success(
         new_task,

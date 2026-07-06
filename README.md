@@ -251,6 +251,33 @@ DATABASE_URL=sqlite:///tasks.db
 
 For production (Render), configure these variables in the Render dashboard rather than committing them to Git.
 
+## Security Features
+
+This project includes several security best practices appropriate for a portfolio-quality Flask application:
+
+- Password hashing using Werkzeug
+- Session-based authentication
+- User-specific authorization checks
+- Email verification with signed, expiring tokens
+- Rate limiting with Flask-Limiter
+- Secure handling of environment variables and secrets
+- SQLAlchemy ORM to prevent SQL injection
+- Automatic HTML escaping through Jinja2 templates
+- Server-side input validation
+- Secure session cookie configuration
+- Generic error responses that avoid exposing sensitive information
+
+### Known Limitations
+
+This project intentionally omits several advanced production features in order to remain educational and approachable:
+
+- Password reset
+- Multi-factor authentication (MFA)
+- OAuth / Social login
+- CSRF protection
+- Content Security Policy (CSP)
+- Advanced audit logging
+
 # Future Improvements
 
 Possible future enhancements include:

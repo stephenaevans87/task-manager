@@ -31,9 +31,15 @@ def parse_due_date(value):
         return None
 
 
-# ===================================
-# MAIN PAGE
-# ===================================
+def get_due_date_from_form():
+
+    return (
+        request.form.get("due_date")
+        or request.form.get("dueDate")
+        or request.form.get("due-date")
+        or ""
+    )
+
 
 @tasks_bp.route("/", methods=["GET", "POST"])
 def home():
@@ -42,6 +48,8 @@ def home():
         return redirect("/login")
 
     if request.method == "POST":
+
+        print("FLASK FORM DATA:", dict(request.form))
 
         task_text = request.form.get(
             "task",
@@ -58,31 +66,22 @@ def home():
             "general"
         )
 
+        raw_due_date = get_due_date_from_form()
+
         due_date = parse_due_date(
-            request.form.get("due_date")
+            raw_due_date
         )
+
+        print("FLASK RAW DUE DATE:", raw_due_date)
+        print("FLASK PARSED DUE DATE:", due_date)
 
         if task_text == "":
             return redirect("/")
 
-        allowed_priorities = [
-            "low",
-            "medium",
-            "high"
-        ]
-
-        if priority not in allowed_priorities:
+        if priority not in ["low", "medium", "high"]:
             priority = "medium"
 
-        allowed_categories = [
-            "general",
-            "work",
-            "school",
-            "personal",
-            "errands"
-        ]
-
-        if category not in allowed_categories:
+        if category not in ["general", "work", "school", "personal", "errands"]:
             category = "general"
 
         add_task(
@@ -281,6 +280,8 @@ def edit_task(task_id):
 
     if request.method == "POST":
 
+        print("FLASK EDIT FORM DATA:", dict(request.form))
+
         title = request.form.get(
             "title",
             ""
@@ -301,31 +302,19 @@ def edit_task(task_id):
             "general"
         )
 
+        raw_due_date = get_due_date_from_form()
+
         due_date = parse_due_date(
-            request.form.get("due_date")
+            raw_due_date
         )
 
-        print("RAW DUE DATE:", request.form.get("due_date"))
-        print("PARSED DUE DATE:", due_date)
+        print("FLASK EDIT RAW DUE DATE:", raw_due_date)
+        print("FLASK EDIT PARSED DUE DATE:", due_date)
 
-        allowed_priorities = [
-            "low",
-            "medium",
-            "high"
-        ]
-
-        if priority not in allowed_priorities:
+        if priority not in ["low", "medium", "high"]:
             priority = "medium"
 
-        allowed_categories = [
-            "general",
-            "work",
-            "school",
-            "personal",
-            "errands"
-        ]
-
-        if category not in allowed_categories:
+        if category not in ["general", "work", "school", "personal", "errands"]:
             category = "general"
 
         update_task(
