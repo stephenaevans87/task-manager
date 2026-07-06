@@ -237,6 +237,20 @@ task-manager/
 
 ---
 
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+Example:
+
+```text
+FLASK_ENV=development
+SECRET_KEY=your-random-secret-key
+DATABASE_URL=sqlite:///tasks.db
+```
+
+For production (Render), configure these variables in the Render dashboard rather than committing them to Git.
+
 # Future Improvements
 
 Possible future enhancements include:
