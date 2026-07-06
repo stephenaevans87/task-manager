@@ -1,12 +1,16 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # Virtual environment
 venv/
 
-# Environment variables
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
 
 # SQLite databases
 *.db
@@ -22,3 +26,4 @@ frontend/dist/
 
 # OS files
 .DS_Store
+Thumbs.db
